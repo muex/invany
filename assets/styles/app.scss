@@ -1,10 +1,10 @@
-$primary: #5c4b51;
-$secondary: #8cbeb2;
+$primary: #8cbeb2;
+$secondary: #5c4b51;
 $success: $secondary;
 $info: #f3b562;
 $warning:#F3B562;
 $danger:#F06060;
-$light: #f2ebbf;
+$light: #ddd;
 $dark: darken($primary, 20%);
 @import "~bootstrap/scss/bootstrap";
 @import '~@fortawesome/fontawesome-free/css/all.min.css';
