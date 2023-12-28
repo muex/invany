@@ -6,75 +6,54 @@ use App\Repository\CustomerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Uid\Uuid;
 
-/**
- * @ORM\Entity(repositoryClass=CustomerRepository::class)
- */
+#[ORM\Entity(repositoryClass: CustomerRepository::class)]
 class Customer
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\Column(type: UuidType::NAME, unique: true)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    private ?Uuid $id;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $number;
+    #[ORM\Column(type: 'integer')]
+    private ?int $number;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $companyname;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $companyname;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $phone;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $phone;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $fax;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $fax;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $mobile;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $mobile;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $mail;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $mail;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $web;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $web;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $currency;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $currency;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $taxid;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $taxid;
 
-    /**
-     * @ORM\OneToMany(targetEntity=CustomerAddress::class, mappedBy="customer")
-     */
-    private $address;
+    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: CustomerAddress::class)]
+    private Collection $address;
 
     public function __construct()
     {
         $this->address = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getId(): ?Uuid
     {
         return $this->id;
     }

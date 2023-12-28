@@ -4,45 +4,38 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Uid\Uuid;
 
-/**
- * @ORM\Entity(repositoryClass=UserRepository::class)
- * @UniqueEntity(fields={"email"}, message="There is already an account with this email")
- */
+#[ORM\Entity(repositoryClass: UserRepository::class)]
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\Column(type: UuidType::NAME, unique: true)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    private ?Uuid $id;
 
-    /**
-     * @ORM\Column(type="string", length=180, unique=true)
-     */
-    private $email;
+    #[ORM\Column(type: 'string', length: 180, unique: true)]
+    private ?string $email;
 
-    /**
-     * @ORM\Column(type="json")
-     */
-    private $roles = [];
+    #[ORM\Column(type: 'json')]
+    private array $roles = [];
 
     /**
      * @var string The hashed password
-     * @ORM\Column(type="string")
      */
-    private $password;
+    #[ORM\Column(type: 'string')]
+    private string $password;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private $isVerified = false;
+    #[ORM\Column(type: 'boolean')]
+    private bool $isVerified = false;
 
-    public function getId(): ?int
+    public function getId(): ?Uuid
     {
         return $this->id;
     }

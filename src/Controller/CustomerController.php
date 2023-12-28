@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Customer;
 use App\Form\CustomerType;
 use App\Repository\CustomerRepository;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,14 +23,14 @@ class CustomerController extends AbstractController
     }
 
     #[Route('/new', name: 'customer_new', methods: ['GET', 'POST'])]
-    public function new(Request $request): Response
+    public function new(Request $request, ManagerRegistry $doctrine): Response
     {
         $customer = new Customer();
         $form = $this->createForm(CustomerType::class, $customer);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager = $doctrine->getManager();
             $entityManager->persist($customer);
             $entityManager->flush();
 

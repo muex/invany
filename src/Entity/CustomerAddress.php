@@ -4,50 +4,37 @@ namespace App\Entity;
 
 use App\Repository\CustomerAddressRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Uid\Uuid;
 
-/**
- * @ORM\Entity(repositoryClass=CustomerAddressRepository::class)
- */
+#[ORM\Entity(repositoryClass: CustomerAddressRepository::class)]
 class CustomerAddress
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\Column(type: UuidType::NAME, unique: true)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    private ?Uuid $id;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $AddressLineOne;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $AddressLineOne;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $addressLineTwo;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $addressLineTwo;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $zip;
+    #[ORM\Column(type: 'integer')]
+    private ?int $zip;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $city;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $city;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $country;
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $country;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Customer::class, inversedBy="address")
-     */
-    private $customer;
+    #[ORM\ManyToOne(targetEntity: Customer::class, inversedBy: 'address')]
+    private ?Customer $customer;
 
-    public function getId(): ?int
+    public function getId(): ?Uuid
     {
         return $this->id;
     }
