@@ -6,6 +6,7 @@ use App\Repository\CustomerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Mpdf\Tag\Address;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 
@@ -45,13 +46,14 @@ class Customer
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $taxid;
 
-    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: CustomerAddress::class)]
-    private Collection $address;
+    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: CustomerAddress::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $customeraddresses;
 
     public function __construct()
     {
-        $this->address = new ArrayCollection();
+        $this->customeraddresses = new ArrayCollection();
     }
+
 
     public function getId(): ?Uuid
     {
@@ -167,32 +169,33 @@ class Customer
     }
 
     /**
-     * @return Collection|CustomerAddress[]
+     * @return Collection<int, CustomerAddress>
      */
-    public function getAddress(): Collection
+    public function getCustomeraddresses(): Collection
     {
-        return $this->address;
+        return $this->customeraddresses;
     }
 
-    public function addAddress(CustomerAddress $address): self
+    public function addCustomeraddress(CustomerAddress $customeraddress): static
     {
-        if (!$this->address->contains($address)) {
-            $this->address[] = $address;
-            $address->setCustomer($this);
+        if (!$this->customeraddresses->contains($customeraddress)) {
+            $this->customeraddresses->add($customeraddress);
+            $customeraddress->setCustomer($this);
         }
 
         return $this;
     }
 
-    public function removeAddress(CustomerAddress $address): self
+    public function removeCustomeraddress(CustomerAddress $customeraddress): static
     {
-        if ($this->address->removeElement($address)) {
+        if ($this->customeraddresses->removeElement($customeraddress)) {
             // set the owning side to null (unless already changed)
-            if ($address->getCustomer() === $this) {
-                $address->setCustomer(null);
+            if ($customeraddress->getCustomer() === $this) {
+                $customeraddress->setCustomer(null);
             }
         }
 
         return $this;
     }
+
 }

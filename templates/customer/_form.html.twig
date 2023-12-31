@@ -1,4 +1,68 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+
+<h2>Addresses</h2>
+<ul class="customer-address" data-prototype="{{ form_widget(form.customeraddresses.vars.prototype)|e('html_attr') }}">
+    {% for addressForm in form.customeraddresses %}
+        <li>{{ form_row(addressForm) }}</li>
+    {% endfor %}
+</ul>
+
+<button class="btn">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}
+
+{% block javascripts %}
+
+    <script>
+        let collectionHolder;
+
+        // Setup an "add a meal" link
+        let addAddressButton = document.createElement('button');
+        addAddressButton.type = 'button';
+        addAddressButton.className = 'add-another-collection-widget';
+        addAddressButton.textContent = 'Add Another Address';
+
+        let newLinkLi = document.createElement('li');
+        newLinkLi.appendChild(addAddressButton);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the ul that holds the collection of meals
+            collectionHolder = document.querySelector('ul.customer-address');
+
+            // Add the "add a meal" anchor and li to the meals ul
+            collectionHolder.appendChild(newLinkLi);
+
+            // Count the current form inputs we have (e.g., 2), use that as the new
+            // index when inserting a new item (e.g., 2)
+            collectionHolder.dataset.index = collectionHolder.querySelectorAll('input').length;
+
+            addAddressButton.addEventListener('click', function(e) {
+                // Add a new meal form (see next code block)
+                addAddressForm(collectionHolder, newLinkLi);
+            });
+        });
+
+        function addAddressForm(collectionHolder, newLinkLi) {
+            // Get the data-prototype explained earlier
+            let prototype = collectionHolder.dataset.prototype;
+
+            // Get the new index
+            let index = parseInt(collectionHolder.dataset.index);
+
+            // Replace '__name__' in the prototype's HTML to
+            // instead be a number based on how many items we have
+            let newForm = prototype.replace(/__name__/g, index.toString());
+
+            // Increase the index with one for the next item
+            collectionHolder.dataset.index = index + 1;
+
+            // Display the form in the page in an li, before the "Add a meal" link li
+            let newFormLi = document.createElement('li');
+            newFormLi.innerHTML += newForm;
+            newLinkLi.parentNode.insertBefore(newFormLi, newLinkLi);
+        }
+
+    </script>
+
+{% endblock %}
+
+

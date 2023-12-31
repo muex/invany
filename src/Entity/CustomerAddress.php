@@ -31,8 +31,10 @@ class CustomerAddress
     #[ORM\Column(type: 'string', length: 255)]
     private ?string $country;
 
-    #[ORM\ManyToOne(targetEntity: Customer::class, inversedBy: 'address')]
-    private ?Customer $customer;
+    #[ORM\ManyToOne(inversedBy: 'customeraddresses')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Customer $customer = null;
+
 
     public function getId(): ?Uuid
     {
@@ -104,7 +106,7 @@ class CustomerAddress
         return $this->customer;
     }
 
-    public function setCustomer(?Customer $customer): self
+    public function setCustomer(?Customer $customer): static
     {
         $this->customer = $customer;
 

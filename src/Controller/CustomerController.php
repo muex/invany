@@ -52,13 +52,13 @@ class CustomerController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'customer_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Customer $customer): Response
+    public function edit(Request $request, Customer $customer, ManagerRegistry $doctrine): Response
     {
         $form = $this->createForm(CustomerType::class, $customer);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $doctrine->getManager()->flush();
 
             return $this->redirectToRoute('customer_index');
         }
