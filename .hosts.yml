@@ -1,0 +1,6 @@
+hosts:
+  production:
+    hostname: 'w0186f22.kasserver.com'
+    remote_user: 'ssh-w0186f22'
+    port: 22
+    deploy_path: '/www/htdocs/w0186f22/invany'
