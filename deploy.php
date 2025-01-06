@@ -109,6 +109,3 @@ task('deploy', [
 
 // Fehlerbehandlung
 after('deploy:failed', 'deploy:unlock');
-
-// Cleanup-Task
-after('deploy', 'cleanup');
