@@ -85,7 +85,7 @@ set('rsync_src', './');
 // Tasks
 desc('Installiere Abhängigkeiten');
 task('deploy:vendors', function () {
-    run('composer install --no-dev --optimize-autoloader');
+    //run('composer install --no-dev --optimize-autoloader');
 });
 
 desc('Cache leeren und aufwärmen');
