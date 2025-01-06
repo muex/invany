@@ -81,11 +81,14 @@ set('rsync', [
     'timeout' => 300,
 ]);
 set('rsync_src', './');
-
+host(getenv('DEPLOYER_HOST'))
+    ->set('remote_user', getenv('DEPLOYER_USER'))
+    ->set('identity_file', '~/.ssh/id_rsa') // Standardmäßig für GitHub Actions
+    ->set('deploy_path', '/var/www/{{application}}');
 // Tasks
 desc('Installiere Abhängigkeiten');
 task('deploy:vendors', function () {
-    //run('composer install --no-dev --optimize-autoloader');
+    run('composer install --no-dev --optimize-autoloader');
 });
 
 desc('Cache leeren und aufwärmen');
