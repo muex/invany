@@ -21,14 +21,16 @@ jobs:
 
       - name: Install Deployer
         run: composer global require deployer/deployer
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOYER_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.DEPLOYER_HOST }} >> ~/.ssh/known_hosts
 
       - name: Run Deployer
         env:
           DEPLOYER_HOST: ${{ secrets.DEPLOYER_HOST }}
           DEPLOYER_USER: ${{ secrets.DEPLOYER_USER }}
-          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
-        run: |
-          echo "${{ secrets.DEPLOYER_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.DEPLOYER_HOST }} >> ~/.ssh/known_hosts
+        run:
           ~/.composer/vendor/bin/dep deploy -vvv
