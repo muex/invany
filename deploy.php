@@ -69,3 +69,8 @@ task('deploy', [
 
 // Fehlerbehandlung
 after('deploy:failed', 'deploy:unlock');
+
+task('debug:release_path', function () {
+    run('ls -la {{release_path}}');
+});
+before('deploy:vendors', 'debug:release_path');
