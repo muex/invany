@@ -1,40 +1,69 @@
 <?php
+
 namespace Deployer;
 
+// Include base recipes
 require 'recipe/symfony.php';
 
-// Project name
-set('application', 'invany');
+// Include hosts
+import('.hosts.yml');
 
-// Project repository
+set('http_user', 'ssh-w0186f22');
+set('http_group', 'w0186f22');
+
 set('repository', 'https://github.com/muex/invany.git');
+set('writable_mode', 'chmod');
+// Define binaries
+set('/usr/bin/php', 'php');
 
-// [Optional] Allocate tty for git clone. Default value is false.
-set('git_tty', true); 
+// Set maximum number of releases
+set('keep_releases', 5);
 
-// Shared files/dirs between deploys 
-add('shared_files', ['.env.local']);
-add('shared_dirs', []);
+// Use current date as release name
+set('release_name', fn() => run('echo $(date "+%Y-%m-%dT%H-%M-%S")'));
 
-// Writable dirs by web server 
-add('writable_dirs', []);
+// Set shared directories
+$sharedDirectories = [
+    'var/log',
+    'public/uploads'
+];
+set('shared_dirs', $sharedDirectories);
+
+// Set shared files
+$sharedFiles = [
+    '.env.local',
+];
+set('shared_files', $sharedFiles);
+// Schreibbare Verzeichnisse
+set('writable_dirs', ['var/cache', 'var/log', 'public/uploads']);
 
 
-// Hosts
-
-host('w0186f22.kasserver.com')
-    ->set('deploy_path', '/www/htdocs/w0186f22/invany');
-    
 // Tasks
-
-task('build', function () {
-    run('cd {{release_path}} && build');
+desc('Installiere Abhängigkeiten');
+task('deploy:vendors', function () {
+    run('composer install --no-dev --optimize-autoloader');
 });
 
-// [Optional] if deploy fails automatically unlock.
+desc('Cache leeren und aufwärmen');
+task('deploy:cache', function () {
+    run('php {{release_path}}/bin/console cache:clear --env=prod');
+    run('php {{release_path}}/bin/console cache:warmup');
+});
+
+desc('Datenbank-Migrationen ausführen');
+task('database:migrate', function () {
+    run('php {{release_path}}/bin/console doctrine:migrations:migrate --no-interaction');
+});
+
+// Deployment-Workflow
+desc('Deployment starten');
+task('deploy', [
+    'deploy:prepare',
+    'deploy:vendors',
+    'deploy:cache',
+    'database:migrate',
+    'deploy:publish',
+]);
+
+// Fehlerbehandlung
 after('deploy:failed', 'deploy:unlock');
-
-// Migrate database before symlink new release.
-
-before('deploy:symlink', 'database:migrate');
-
