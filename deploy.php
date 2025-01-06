@@ -42,6 +42,7 @@ set('writable_dirs', ['var/cache', 'var/log', 'public/uploads']);
 // Tasks
 desc('Installiere Abhängigkeiten');
 task('deploy:vendors', function () {
+    run('pwd');
     run('composer install --no-dev --optimize-autoloader');
 });
 
