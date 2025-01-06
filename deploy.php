@@ -14,7 +14,7 @@ set('http_user', 'ssh-w0186f22');
 set('http_group', 'w0186f22');
 
 set('repository', 'https://github.com/muex/invany.git');
-
+set('writable_mode', 'chmod');
 // Define binaries
 set('/usr/bin/php', 'php');
 
