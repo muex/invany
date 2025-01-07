@@ -14,7 +14,10 @@ set('writable_mode', 'chmod');
 set('/usr/bin/php', 'php');
 // [Optional] Allocate tty for git clone. Default value is false.
 //set('git_tty', true);
-
+host(getenv('DEPLOYER_HOST'))
+    ->set('remote_user', getenv('DEPLOYER_USER'))
+    ->set('identity_file', '~/.ssh/id_rsa') // Pfad zum privaten Schlüssel
+    ->set('deploy_path', '/www/htdocs/w0186f22/invany');
 // Shared files/dirs between deploys 
 add('shared_files', ['.env.local']);
 add('shared_dirs', []);
