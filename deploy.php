@@ -5,12 +5,13 @@ require 'recipe/symfony.php';
 
 // Project name
 set('application', 'invany');
-
+set('http_user', 'ssh-w0186f22');
+set('http_group', 'w0186f22');
 // Project repository
 set('repository', 'https://github.com/muex/invany.git');
 
 // [Optional] Allocate tty for git clone. Default value is false.
-set('git_tty', true); 
+//set('git_tty', true);
 
 // Shared files/dirs between deploys 
 add('shared_files', ['.env.local']);
