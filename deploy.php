@@ -1,75 +1,40 @@
 <?php
-
 namespace Deployer;
 
-// Include base recipes
 require 'recipe/symfony.php';
 
-// Include hosts
-import('.hosts.yml');
+// Project name
+set('application', 'invany');
 
-set('http_user', 'ssh-w0186f22');
-set('http_group', 'w0186f22');
-
+// Project repository
 set('repository', 'https://github.com/muex/invany.git');
-set('deploy_path', '/www/htdocs/w0186f22/invany');
-set('writable_mode', 'chmod');
-// Define binaries
-set('/usr/bin/php', 'php');
 
-// Set maximum number of releases
-set('keep_releases', 5);
+// [Optional] Allocate tty for git clone. Default value is false.
+set('git_tty', true); 
 
-// Use current date as release name
-set('release_name', fn() => run('echo $(date "+%Y-%m-%dT%H-%M-%S")'));
+// Shared files/dirs between deploys 
+add('shared_files', ['.env.local']);
+add('shared_dirs', []);
 
-// Set shared directories
-$sharedDirectories = [
-    'var/log',
-    'public/uploads'
-];
-set('shared_dirs', $sharedDirectories);
-
-// Set shared files
-$sharedFiles = [
-    '.env.local',
-];
-set('shared_files', $sharedFiles);
-// Schreibbare Verzeichnisse
-set('writable_dirs', ['var/cache', 'var/log', 'public/uploads']);
+// Writable dirs by web server 
+add('writable_dirs', []);
 
 
+// Hosts
+
+host('w0186f22.kasserver.com')
+    ->set('deploy_path', '/www/htdocs/w0186f22/invany');
+    
 // Tasks
-desc('Installiere Abhängigkeiten');
-task('deploy:vendors', function () {
-    run('composer install --no-dev --optimize-autoloader', ['cwd' => '{{release_path}}']);
+
+task('build', function () {
+    run('cd {{release_path}} && build');
 });
 
-desc('Cache leeren und aufwärmen');
-task('deploy:cache', function () {
-    run('php {{release_path}}/bin/console cache:clear --env=prod');
-    run('php {{release_path}}/bin/console cache:warmup');
-});
-
-desc('Datenbank-Migrationen ausführen');
-task('database:migrate', function () {
-    run('php {{release_path}}/bin/console doctrine:migrations:migrate --no-interaction');
-});
-
-// Deployment-Workflow
-desc('Deployment starten');
-task('deploy', [
-    'deploy:prepare',
-    'deploy:vendors',
-    'deploy:cache',
-    'database:migrate',
-    'deploy:publish',
-]);
-
-// Fehlerbehandlung
+// [Optional] if deploy fails automatically unlock.
 after('deploy:failed', 'deploy:unlock');
 
-task('debug:release_path', function () {
-    run('ls -la {{release_path}}');
-});
-before('deploy:vendors', 'debug:release_path');
+// Migrate database before symlink new release.
+
+before('deploy:symlink', 'database:migrate');
+
