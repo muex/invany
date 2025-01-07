@@ -36,7 +36,9 @@ host('w0186f22.kasserver.com')
 task('build', function () {
     run('cd {{release_path}} && build');
 });
-
+task('deploy:cache:clear', function () {
+    run('php {{release_path}}/bin/console cache:clear --env=prod --no-debug');
+});
 // [Optional] if deploy fails automatically unlock.
 after('deploy:failed', 'deploy:unlock');
 
