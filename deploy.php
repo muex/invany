@@ -14,6 +14,11 @@ set('writable_mode', 'chmod');
 set('/usr/bin/php', 'php');
 // [Optional] Allocate tty for git clone. Default value is false.
 //set('git_tty', true);
+// Set maximum number of releases
+set('keep_releases', 5);
+
+// Use current date as release name
+set('release_name', fn() => run('echo $(date "+%Y-%m-%dT%H-%M-%S")'));
 host(getenv('DEPLOYER_HOST'))
     ->set('remote_user', getenv('DEPLOYER_USER'))
     ->set('identity_file', '~/.ssh/id_rsa') // Pfad zum privaten Schlüssel
